@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // DOM elements
   const activitiesList = document.getElementById("activities-list");
   const messageDiv = document.getElementById("message");
+  const themeToggle = document.getElementById("theme-toggle");
   const registrationModal = document.getElementById("registration-modal");
   const modalActivityName = document.getElementById("modal-activity-name");
   const signupForm = document.getElementById("signup-form");
@@ -27,11 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Activity categories with corresponding colors
   const activityTypes = {
-    sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
-    arts: { label: "Arts", color: "#f3e5f5", textColor: "#7b1fa2" },
-    academic: { label: "Academic", color: "#e3f2fd", textColor: "#1565c0" },
-    community: { label: "Community", color: "#fff3e0", textColor: "#e65100" },
-    technology: { label: "Technology", color: "#e8eaf6", textColor: "#3949ab" },
+    sports: { label: "Sports" },
+    arts: { label: "Arts" },
+    academic: { label: "Academic" },
+    community: { label: "Community" },
+    technology: { label: "Technology" },
   };
 
   // State for activities and filters
@@ -43,6 +44,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication state
   let currentUser = null;
+
+  function updateThemeToggle() {
+    const isDark = document.documentElement.dataset.theme === "dark";
+    themeToggle.textContent = isDark ? "☀️ Light mode" : "🌙 Dark mode";
+    themeToggle.setAttribute(
+      "aria-label",
+      `Switch to ${isDark ? "light" : "dark"} mode`
+    );
+    themeToggle.setAttribute("aria-pressed", isDark);
+  }
+
+  themeToggle.addEventListener("click", () => {
+    const nextTheme =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nextTheme;
+    try {
+      localStorage.setItem("theme", nextTheme);
+    } catch {}
+    updateThemeToggle();
+  });
+  updateThemeToggle();
 
   // Time range mappings for the dropdown
   const timeRanges = {
@@ -501,7 +523,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Create activity tag
     const tagHtml = `
-      <span class="activity-tag" style="background-color: ${typeInfo.color}; color: ${typeInfo.textColor}">
+      <span class="activity-tag ${activityType}">
         ${typeInfo.label}
       </span>
     `;
