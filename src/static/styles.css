@@ -178,6 +178,36 @@ section h3 {
   border-bottom: 1px solid var(--border-light);
 }
 
+.activity-card:target,
+.activity-card.shared-activity {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.activity-sharing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.activity-sharing a {
+  padding: 6px 10px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.activity-sharing a:hover,
+.activity-sharing a:focus-visible {
+  background-color: var(--primary);
+  color: var(--primary-text);
+}
+
 .activity-card p {
   margin-bottom: 8px;
   line-height: 1.4;

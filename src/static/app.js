@@ -402,6 +402,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Apply search and filter, and handle weekend filter in client
       displayFilteredActivities();
+      let sharedActivityId = "";
+      try {
+        sharedActivityId = decodeURIComponent(window.location.hash.slice(1));
+      } catch {
+        // Ignore malformed links and continue showing the activity list.
+      }
+      const sharedActivity = document.getElementById(sharedActivityId);
+      if (sharedActivity) {
+        sharedActivity.scrollIntoView();
+      }
     } catch (error) {
       activitiesList.innerHTML =
         "<p>Failed to load activities. Please try again later.</p>";
@@ -476,6 +486,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
     activityCard.className = "activity-card";
+    activityCard.id = `activity-${encodeURIComponent(name)}`;
+    if (window.location.hash === `#${encodeURIComponent(activityCard.id)}`) {
+      activityCard.classList.add("shared-activity");
+    }
 
     // Calculate spots and capacity
     const totalSpots = details.max_participants;
@@ -587,6 +601,42 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    const shareUrl = new URL(window.location.pathname, window.location.origin);
+    shareUrl.hash = encodeURIComponent(activityCard.id);
+    const shareText = `Check out ${name} at Mergington High School!`;
+    const sharingLinks = [
+      ["Facebook", "https://www.facebook.com/sharer/sharer.php", {
+        u: shareUrl.href,
+      }],
+      ["X", "https://twitter.com/intent/tweet", {
+        text: shareText,
+        url: shareUrl.href,
+      }],
+      ["WhatsApp", "https://wa.me/", {
+        text: `${shareText} ${shareUrl.href}`,
+      }],
+    ];
+    const shareControls = document.createElement("div");
+    shareControls.className = "activity-sharing";
+    shareControls.setAttribute("role", "group");
+    shareControls.setAttribute("aria-label", `Share ${name}`);
+    const shareLabel = document.createElement("span");
+    shareLabel.textContent = "Share:";
+    shareControls.appendChild(shareLabel);
+
+    sharingLinks.forEach(([platform, endpoint, parameters]) => {
+      const link = document.createElement("a");
+      const destination = new URL(endpoint);
+      destination.search = new URLSearchParams(parameters).toString();
+      link.href = destination.href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = platform;
+      link.setAttribute("aria-label", `Share ${name} on ${platform} (opens in a new tab)`);
+      shareControls.appendChild(link);
+    });
+
+    activityCard.appendChild(shareControls);
     activitiesList.appendChild(activityCard);
   }
 
